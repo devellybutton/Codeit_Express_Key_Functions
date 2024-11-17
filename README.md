@@ -106,6 +106,7 @@ app.user((err, req, res, next) => {
 ### 3. 미들웨어 사용법
 
 #### 1) 미들웨어의 실행 순서
+
 - 콜백함수의 나열 순서대로 실행됨.
     ```
     // 첫번째 미들웨어
@@ -349,8 +350,74 @@ app.get('/hello', one, two, three);
 
 ### 에러 처리하기
 
+#### 1) 예외사항
+- 의도한 대로 동작하지 않는 것, 오류
+- 서버가 멈추는 상황을 방지하기 위해서는 오류가 발생했을 때, 기존 동작을 대신해서 수행하는 별도의 동작을 마련해야 함. <br>
+→ 이때 대신해서 수행되는 동작이 에러 핸들러임
 
+#### 2) Express에서 기본 오류 처리하는 방법
+  - throw 키워드로 에러 발생시키기
+  - next로 아큐먼트 넘겨줬을 떄
 
+#### 3) 에러 핸들러를 정의하지 않아도 가능한 이유
+- express는 기본적으로 에러 핸들러가 내장되어 있음.
+- 내장 에러 핸들러는 기본적으로 http 에러 핸들러를 response 하다보니 response body에 html이 담겨져 있음.
+- 만약 rexpress로 웹 API를 만들고 있다면 res.json으로 전달하면 됨.
+
+#### 4) 에러 핸들러는 가장 나중에 작성해야함.
+- 앞쪽의 다른 미들웨어 에러를 처리해야하므로 뒤쪽에 위치
+
+#### 5) 예시
+- 내장 에러 핸들러
+  ```
+  function error(req, res, next) {
+    throw new Error('에러 발생!')
+    next();
+  }
+
+  function ok(req, res, next) {
+    res.json({ message: 'OK!' });
+  }
+
+  app.get('/error', error, ok);
+  ```
+  ![image](https://github.com/user-attachments/assets/a6bf6732-db63-470e-ae0e-ca385a8f5c3e)
+
+- res.json으로 에러를 반환하도록 함
+  - use 메소드를 사용해서 에러가 발생하면 이 에러핸들러가 실행하도록 되어 있음.
+
+  ```
+  function error(req, res, next) {
+    // throw new Error('에러 발생!')
+    next(new Error('에러 발생!'))
+    next();
+  }
+
+  function ok(req, res, next) {
+    res.json({ message: 'OK!' });
+  }
+
+  app.get('/error', error, ok);
+
+  app.use((err, req, res, next) => {
+    console.log(err);
+    res.json({ message: '에러 핸들러!' });
+  });
+  ```
+  ```
+  Error: 에러 발생!
+      at error (file:///C:/Users/airyt/Codeit_Express_Key_Functions/src/app.js:7:8)
+      at Layer.handle [as handle_request] (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\layer.js:95:5)     
+      at next (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\route.js:149:13)
+      at Route.dispatch (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\route.js:119:3)
+      at Layer.handle [as handle_request] (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\layer.js:95:5)     
+      at C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\index.js:284:15
+      at Function.process_params (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\index.js:346:12)
+      at next (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\index.js:280:10)
+      at expressInit (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\middleware\init.js:40:5)
+      at Layer.handle [as handle_request] (C:\Users\airyt\Codeit_Express_Key_Functions\node_modules\express\lib\router\layer.js:95:5) 
+  ```
+  ![image](https://github.com/user-attachments/assets/b98fcd2e-fc00-4bbb-9b34-966e3392f080)
 
 ### 내장 미들웨어
 
