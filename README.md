@@ -579,6 +579,64 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ### 라우트 중복 제거하기
 
+- <b>app.route()</b> 메소드를 사용하여 중복되는 경로를 하나로 묶을 수 있음.
+
+  - 중복 제거 전
+  ```
+  import express from 'express';
+
+  const app = express();
+
+  app.get('/products', (req, res) => {
+    res.json({ message: 'Product 목록 보기' });
+  });
+
+  app.post('/products', (req, res) => {
+    res.json({ message: 'Product 추가하기' });
+  });
+
+  app.patch('/products/:id', (req, res) => {
+    res.json({ message: 'Product 수정하기' });
+  });
+
+  app.delete('/products/:id', (req, res) => {
+    res.json({ message: 'Product 삭제하기' });
+  });
+
+  app.listen(3000, () => {
+    console.log('Server is listening on port 3000');
+  });
+  ```
+
+  - 중복 제거 후
+  ```
+  import express from 'express';
+
+  const app = express();
+
+  // /products 경로에 대해 여러 HTTP 메서드 처리
+  app.route('/products')
+    .get((req, res) => {
+      res.json({ message: 'Product 목록 보기' });
+    })
+    .post((req, res) => {
+      res.json({ message: 'Product 추가하기' });
+    });
+
+  // /products/:id 경로에 대해 여러 HTTP 메서드 처리
+  app.route('/products/:id')
+    .patch((req, res) => {
+      res.json({ message: 'Product 수정하기' });
+    })
+    .delete((req, res) => {
+      res.json({ message: 'Product 삭제하기' });
+    });
+
+  app.listen(3000, () => {
+    console.log('Server is listening on port 3000');
+  });
+  ```
+
 ### 라우터 만들기
 
 ### 라우터 레벨 미들웨어
