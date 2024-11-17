@@ -421,7 +421,94 @@ app.get('/hello', one, two, three);
 
 ### 내장 미들웨어
 
+- 내장 미들웨어 특징
+  - 모든 경로의 요청에 공통으로 적용
+  - 주로 app.use()와 함께 사용
+  - 요청 데이터 파싱, 정적 파일 제공 등 기본적인 기능 제공
 
+- <b>express.json()</b>
+  - 클라이언트에서 전송한 JSON 형식의 데이터를 req.body에 자동으로 파싱하여 객체로 변환
+
+  ```
+  // JSON 요청 처리 미들웨어 등록
+  app.use(express.json());
+
+  // POST 요청 처리
+  app.post('/users', (req, res) => {
+    console.log(req.body); // { name: "Codeit", age: 25 }
+    res.json({ success: true });
+  });
+  ```
+  ```
+  // 클라이언트 요청
+  fetch('/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: 'Codeit',
+      age: 25
+    })
+  });
+  ```
+
+- <b>express.urlEncoded()</b>
+  - HTML 폼으로 전송된 데이터를 application/x-www-form-urlencoded 형식으로 파싱하여 req.body에 객체로 저장
+  ```
+  // URL 인코딩된 데이터 처리 미들웨어 등록
+  app.use(express.urlencoded({ extended: true }));
+
+  // HTML 폼 데이터 처리
+  app.post('/login', (req, res) => {
+    console.log(req.body); // { username: "codeit", password: "1234" }
+    res.send('로그인 성공');
+  });
+  ```
+
+  ```
+  <!-- HTML 폼 -->
+  <form action="/login" method="POST">
+    <input name="username" type="text">
+    <input name="password" type="password">
+    <button type="submit">로그인</button>
+  </form>
+  ```
+
+- <b>express.static()</b>
+  - 서버에서 지정된 디렉토리의 정적 파일을 클라이언트에 제공하기 위해 사용됨.
+
+  ```
+  // 정적 파일 제공 미들웨어 등록
+  app.use(express.static('public'));
+
+  // public 폴더 구조:
+  // public/
+  //   ├── images/
+  //   │   └── logo.png
+  //   ├── css/
+  //   │   └── style.css
+  //   └── index.html
+  ```
+  ```
+  <!-- 브라우저에서 직접 접근 가능 -->
+  <img src="/images/logo.png">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- index.html은 루트 경로(/)로 접근 가능 -->
+  // localhost:3000/ -> index.html
+  ```
+  ```
+  // 여러 폴더를 정적 파일 경로로 지정
+  app.use(express.static('public'));
+  app.use(express.static('files'));
+
+  // 가상 경로 설정
+  app.use('/static', express.static('public'));
+  // /static/images/logo.png로 접근
+  ```
+
+  ![image](https://github.com/user-attachments/assets/2f092f03-e937-45e0-8769-32736a779b41)
 
 
 ### 서드파티 미들웨어
