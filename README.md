@@ -513,9 +513,66 @@ app.get('/hello', one, two, three);
 
 ### 서드파티 미들웨어
 
+- <b>cookie-parser</b>: 클라이언트가 보낸 쿠키를 자동으로 파싱하여 req.cookies 객체로 제공하는 미들웨어 (key, value 형태로 만들어줌)
+```
+import express from 'express';
+import multer from 'multer';
 
+const app = express();
+const upload = multer({ dest: 'uploads/' });
 
+app.post('/profile', upload.single('avatar'), (req, res) => {
+  console.log(req.file); // 업로드된 파일 정보
+  res.json({ message: '파일 업로드 완료!' });
+});
 
+app.listen(3000, () => console.log('Server is listening on port 3000'));
+```
+
+- <b>morgan</b>: 서버로 들어온 리퀘스트에 대한 로그를 자동으로 기록해주는 미들웨어
+```
+import express from 'express';
+import morgan from 'morgan';
+
+const app = express();
+app.use(morgan('tiny')); // 간단한 로그 형식
+
+app.get('/hello', (req, res) => {
+  res.json({ message: '안녕!' });
+});
+
+app.listen(3000, () => console.log('Server is listening on port 3000'));
+```
+- <b>cors</b>: 다른 도메인에서 리소스를 접근할 수 있도록 허용하는 CORS 관련 설정을 쉽게 해주는 미들웨어
+```
+import express from 'express';
+import cors from 'cors';
+
+const app = express();
+app.use(cors()); // 모든 도메인에서 접근 허용
+
+app.get('/hello', (req, res) => {
+  res.json({ message: '안녕!' });
+});
+
+app.listen(3000, () => console.log('Server is listening on port 3000'));
+```
+
+- <b>multer</b>: 파일 업로드를 처리하는 미들웨어로, multipart/form-data 형식의 데이터를 쉽게 다룰 수 있게 해줌.
+```
+import express from 'express';
+import multer from 'multer';
+
+const app = express();
+const upload = multer({ dest: 'uploads/' });
+
+app.post('/profile', upload.single('avatar'), (req, res) => {
+  console.log(req.file); // 업로드된 파일 정보
+  res.json({ message: '파일 업로드 완료!' });
+});
+
+app.listen(3000, () => console.log('Server is listening on port 3000'));
+```
 -----
 
 ## 2. 라우터
