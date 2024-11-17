@@ -283,7 +283,7 @@ app.get('/hello/world', (req, res) => {
     - 주로 전역 미들웨어나 특정 경로 그룹에 공통 로직 적용할 때 사용
 
 
-### 미들웨어로 req, res 다루기
+### 4. 미들웨어로 req, res 다루기
 
 - 하나의 리퀘스트가 여러 미들웨어를 지나가도록 되어 있다면 모든 미들웨어에서 <b>같은</b> 리퀘스트와 리스폰스 객체를 사용하게 됨.
 - 하나의 라우터에서 여러 미들웨어를 사용하는 코드가 있으면 <b>동일한 내용</b>이 출력됨.
@@ -348,7 +348,7 @@ app.get('/hello', one, two, three);
     - req: 요청에 관련된 정보 <i>(예: 사용자 정보, 쿼리, 본문)</i>
     - res: 응답에 관련된 정보 <i>(예: 상태, 헤더, 응답 데이터)</i>
 
-### 에러 처리하기
+### 5. 에러 처리하기
 
 #### 1) 예외사항
 - 의도한 대로 동작하지 않는 것, 오류
@@ -419,9 +419,9 @@ app.get('/hello', one, two, three);
   ```
   ![image](https://github.com/user-attachments/assets/b98fcd2e-fc00-4bbb-9b34-966e3392f080)
 
-### 내장 미들웨어
+### 6. 내장 미들웨어
 
-- 내장 미들웨어 특징
+- <b>내장 미들웨어 특징</b>
   - 모든 경로의 요청에 공통으로 적용
   - 주로 app.use()와 함께 사용
   - 요청 데이터 파싱, 정적 파일 제공 등 기본적인 기능 제공
@@ -511,7 +511,7 @@ app.get('/hello', one, two, three);
   ![image](https://github.com/user-attachments/assets/2f092f03-e937-45e0-8769-32736a779b41)
 
 
-### 서드파티 미들웨어
+### 7. 서드파티 미들웨어
 
 - <b>cookie-parser</b>: 클라이언트가 보낸 쿠키를 자동으로 파싱하여 req.cookies 객체로 제공하는 미들웨어 (key, value 형태로 만들어줌)
 ```
@@ -577,7 +577,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ## Ⅱ. 라우터
 
-### 라우트 중복 제거하기
+### 1. 라우트 중복 제거하기
 
 - <b>app.route()</b> 메소드를 사용하여 중복되는 경로를 하나로 묶을 수 있음.
 
@@ -637,7 +637,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
   });
   ```
 
-### 라우터 만들기
+### 2. 라우터 만들기
 
 - <b>라우터의 모듈화</b>
   - 관련 있는 라우트들을 하나의 파일로 모듈화
@@ -689,7 +689,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
   app.listen(3000);
   ```
 
-### 라우터 레벨 미들웨어
+### 3. 라우터 레벨 미들웨어
 
 - <b>라우터 레벨 미들웨어</b>
   - Express에서 특정 라우터에만 적용되는 미들웨어
@@ -730,7 +730,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
     => product에서 시작하는 경로에서 미들웨어의 콘솔이 출력됨
 
 
-### Express 프로젝트 구조와 모듈화
+### 4. Express 프로젝트 구조와 모듈화
 
 - <b>프로젝트 구조</b>
   ```
@@ -748,7 +748,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ## Ⅲ. 파일 업로드
 
-### 파일과 multipart/form-data
+### 1. 파일과 multipart/form-data
 
 #### Content-Type이란?
 - HTTP 요청/응답의 본문(body)이 어떤 형식인지 명시하는 헤더
@@ -821,7 +821,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
   - multer 같은 미들웨어로 파일 업로드 처리 가능
   - 브라우저는 multipart/form-data 설정 시 자동으로 적절한 요청 형식 구성
 
-### multer 미들웨어 사용하기
+### 2. multer 미들웨어 사용하기
 
 #### Multer
   - multipart/form-data 형식의 요청 본문을 처리하는 미들웨어
@@ -852,4 +852,92 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
   ![image](https://github.com/user-attachments/assets/b49c61e6-dc4f-451a-a4db-fc277d0bcba5)
 
-### 서버의 파일 제공하기
+### 3. 서버의 파일 제공하기
+
+#### 1) Static 파일 제공 설정
+  - express.static() 미들웨어는 서버에서 정적 파일을 제공하는 데 사용됨.
+  - 파일이 업로드된 폴더를 정적 파일로 설정하여 사용자가 파일을 직접 접근할 수 있도록 할 수 있음.
+  ```
+  import express from 'express';
+  import multer from 'multer';
+  import path from 'path';
+
+  const app = express();
+
+  // 파일 업로드 설정
+  const upload = multer({ dest: 'uploads/' });
+
+  // 정적 파일 제공 설정
+  app.use(express.static('uploads'));  // 'uploads' 폴더 내의 파일을 접근 가능하게 설정
+  ```
+
+  - 위 코드에서 /uploads 경로에 있는 파일들을 클라이언트가 직접 접근할 수 있도록 제공할 수 있음. 
+  - 예를 들어, http://localhost:3000/abc.png와 같은 형식으로 파일에 접근할 수 있게 됨.
+
+#### 2) 파일 업로드 및 접근 경로 설정
+  - 사용자가 파일을 업로드한 후, 업로드된 파일의 경로를 클라이언트에게 반환하고, 해당 파일을 접근할 수 있도록 설정함.
+  ```
+  // 예시: 파일 업로드 후 접근 경로 반환
+
+  // 파일 업로드 API
+  app.post('/files', upload.single('attachment'), (req, res) => {
+    // 업로드된 파일의 경로를 반환
+    const filePath = `/files/${req.file.filename}`;
+    res.json({ path: filePath });
+  });
+  ```
+  - upload.single('attachment'): 클라이언트가 업로드한 파일을 attachment라는 필드로 처리
+  - req.file.filename: 업로드된 파일의 이름을 반환
+  - /files/filename: 클라이언트가 업로드된 파일을 접근할 수 있는 URL 경로
+
+#### 3) 파일 접근 경로 설정
+  - 파일이 업로드된 후 해당 파일에 접근할 수 있는 경로를 설정해야 함.
+  - express.static() 미들웨어를 사용하여 uploads 폴더에서 파일을 제공하도록 설정할 수 있음. 
+  - 업로드된 파일을 /files/파일명 형태로 접근할 수 있도록 하려면, /files 경로를 추가로 설정해야 함.
+
+  ```
+  // 예시: /files 경로에서 업로드된 파일 제공
+  app.use('/files', express.static('uploads'));
+  ```
+
+  - 위 코드에서 app.use('/files', express.static('uploads'))는 /files 경로를 통해 uploads 폴더 내의 파일을 제공할 수 있게 설정함.
+  - 예를 들어, abc.png 파일을 업로드한 후, 사용자는 http://localhost:3000/files/abc.png와 같이 파일에 접근할 수 있음.
+
+  ```
+  import express from 'express';
+  import multer from 'multer';
+  import path from 'path';
+
+  const app = express();
+
+  // 파일 업로드 설정
+  const upload = multer({ dest: 'uploads/' });
+
+  // /files 경로를 통해 uploads 폴더 내의 파일에 접근 가능하게 설정
+  app.use('/files', express.static('uploads'));
+
+  // 파일 업로드 API
+  app.post('/files', upload.single('attachment'), (req, res) => {
+    const filePath = `/files/${req.file.filename}`;
+    res.json({ path: filePath });  // 업로드된 파일의 경로 반환
+  });
+
+  // 서버 시작
+  app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');
+  });
+```
+
+#### 요약:
+- <b>파일 업로드</b>: multer를 사용하여 파일을 업로드하고, uploads 폴더에 저장함.
+- <b>파일 제공</b>: express.static() 미들웨어를 사용하여 uploads 폴더를 정적 파일로 제공함.
+- <b>파일 업로드 후 경로 반환</b>: 파일을 업로드한 후, /files/파일명 경로를 클라이언트에 반환하여 사용자가 파일을 접근할 수 있게 함.
+
+#### 실행 예시:
+  - <b>파일 업로드</b>: POST /files로 파일을 업로드하면 JSON 응답으로 파일 경로(path: '/files/filename')를 받음.
+
+    ![image](https://github.com/user-attachments/assets/cdd9b5f6-c982-468e-a618-ef9153234440)
+
+  - <b>파일 접근</b>: GET /files/filename으로 업로드된 파일을 접근할 수 있음.
+
+    ![image](https://github.com/user-attachments/assets/69ffef06-8ae2-4e46-8314-cd6117e5be17)
