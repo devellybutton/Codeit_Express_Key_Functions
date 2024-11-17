@@ -639,6 +639,56 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ### 라우터 만들기
 
+- <b>라우터의 모듈화</b>
+  - 관련 있는 라우트들을 하나의 파일로 모듈화
+  - 코드 구조가 깔끔해지고 유지보수가 쉬워짐
+  - /products나 /users와 같은 URL 그룹별로 라우트 관리 가능
+  ```
+  // routes/products.js
+  const express = require('express');
+  const router = express.Router();
+
+  // 제품 관련 라우트들을 하나의 모듈로 관리
+  router.get('/', (req, res) => {
+    res.json({ products: [] });
+  });
+
+  router.get('/:id', (req, res) => {
+    res.json({ product: { id: req.params.id } });
+  });
+
+  module.exports = router;
+
+  // routes/users.js
+  const express = require('express');
+  const router = express.Router();
+
+  // 사용자 관련 라우트들을 하나의 모듈로 관리
+  router.get('/', (req, res) => {
+    res.json({ users: [] });
+  });
+
+  router.post('/', (req, res) => {
+    res.json({ message: '사용자 생성됨' });
+  });
+
+  module.exports = router;
+
+  // app.js (메인 파일)
+  const express = require('express');
+  const app = express();
+
+  // 라우터 모듈 불러오기
+  const productRouter = require('./routes/products');
+  const userRouter = require('./routes/users');
+
+  // 라우터 연결
+  app.use('/products', productRouter);  // /products 경로로 시작하는 요청
+  app.use('/users', userRouter);        // /users 경로로 시작하는 요청
+
+  app.listen(3000);
+  ```
+
 ### 라우터 레벨 미들웨어
 
 ### Express 프로젝트 구조와 모듈화
