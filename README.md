@@ -284,8 +284,68 @@ app.get('/hello/world', (req, res) => {
 
 ### 미들웨어로 req, res 다루기
 
+- 하나의 리퀘스트가 여러 미들웨어를 지나가도록 되어 있다면 모든 미들웨어에서 <b>같은</b> 리퀘스트와 리스폰스 객체를 사용하게 됨.
+- 하나의 라우터에서 여러 미들웨어를 사용하는 코드가 있으면 <b>동일한 내용</b>이 출력됨.
 
+```
+function one(req, res, next) {
+  console.log(req.query);
+  return next();
+}
 
+function two(req, res, next) {
+  console.log(req.query);
+  return next();
+}
+
+function three(req, res, next) {
+  console.log(req.query);
+  return res.json({ message: '안녕, 코드잇 (;' });
+}
+
+app.get('/hello', one, two, three);
+```
+![image](https://github.com/user-attachments/assets/2c23d1c0-7e71-499d-90ea-53fe9f908cfa)
+
+- 미들웨어에서 미들웨어로 값을 전달해야하는 상황에서 사용할 수 있음.
+  - 사용 예시 : 사용자 정보에 접근할 수 있도록 하는 것
+  ```
+  function authentication(req, res, next) {
+    req.user = 'Codeit';
+    next();
+  }
+
+  app.get('/me, authentication, (req, res, next) => {
+    console.log(req.user);
+    res.json({ user: req.user }')
+  }'
+  ```
+
+- 미들웨어 req, res에 추가하는 기준
+  - 추가하는 값의 성질에 따라 다르게 추가할 수 있음.
+  - req에 값 추가하기:
+    - 요청에 관련된 데이터를 저장할 때 사용
+    - 예시: 사용자 정보, 요청 본문, 쿼리 파라미터 등
+    ```
+    function authentication(req, res, next) {
+      req.user = 'Codeit';  // 사용자 정보를 req에 추가
+      next();  // 다음 미들웨어나 라우트로 넘어가기
+    }
+    ```
+
+  - res에 값 추가하기:
+    - 응답에 관련된 데이터를 저장할 때 사용
+    - 예시: 응답 데이터, 상태 코드, 헤더 등
+    ```
+    app.get('/me', authentication, (req, res) => {
+      console.log(req.user);  // req에서 사용자 정보 접근
+      res.json({ user: req.user });  // 사용자 정보를 응답으로 보내기
+    });
+    ```
+
+  - 표준 규칙:
+    - req: 요청에 관련된 정보 <i>(예: 사용자 정보, 쿼리, 본문)</i>
+    - res: 응답에 관련된 정보 <i>(예: 상태, 헤더, 응답 데이터)</i>
 
 ### 에러 처리하기
 

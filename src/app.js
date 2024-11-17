@@ -2,35 +2,22 @@ import express from 'express';
 
 const app = express();
 
-function meeting(req, res, next) {
-  console.log('오!');
-  next();
+function one(req, res, next) {
+  console.log(req.query);
+  return next();
 }
 
-function greeting(req, res, next) {
-  console.log('안녕, GET!')
-  res.json({ message: '안녕하십니까!' });
-};
+function two(req, res, next) {
+  console.log(req.query);
+  return next();
+}
 
-app.use('/hello', (req, res, next) => {
-  console.log('안녕, use!');
-  next();
-})
+function three(req, res, next) {
+  console.log(req.query);
+  return res.json({ message: '안녕, 코드잇 (;' });
+}
 
-app.all('/hello/all', (req, res, next) => {
-  console.log('안녕, all!');
-  next();
-})
-
-app.get('/hello/all', (req, res, next) => {
-  console.log('안녕, GET!')
-  res.json({ message: '안녕하십니까!' });
-});
-
-app.post('/hello/all', (req, res, next) => {
-  console.log('안녕, POST!')
-  res.json({ message: '안녕하십니까!' });
-});
+app.get('/hello', one, two, three);
 
 app.listen(3000, () => {
   console.log('Server is listening on port 3000');

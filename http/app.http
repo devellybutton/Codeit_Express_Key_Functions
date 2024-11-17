@@ -1,4 +1,4 @@
-GET http://localhost:3000/hello
+GET http://localhost:3000/hello?name=world
 
 ###
 
@@ -7,3 +7,7 @@ POST http://localhost:3000/hello
 ###
 
 GET http://localhost:3000/hello/all
+
+###
+
+GET http://localhost:3000/hello/world
