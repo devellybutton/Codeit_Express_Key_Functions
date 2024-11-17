@@ -7,17 +7,30 @@ function meeting(req, res, next) {
   next();
 }
 
-function waving(req, res, next) {
-  console.log('손을 흔든다!');
-  next();
-}
-
 function greeting(req, res, next) {
-  console.log('안녕!');
+  console.log('안녕, GET!')
   res.json({ message: '안녕하십니까!' });
 };
 
-app.get('/', meeting, waving, greeting);
+app.use('/hello', (req, res, next) => {
+  console.log('안녕, use!');
+  next();
+})
+
+app.all('/hello/all', (req, res, next) => {
+  console.log('안녕, all!');
+  next();
+})
+
+app.get('/hello/all', (req, res, next) => {
+  console.log('안녕, GET!')
+  res.json({ message: '안녕하십니까!' });
+});
+
+app.post('/hello/all', (req, res, next) => {
+  console.log('안녕, POST!')
+  res.json({ message: '안녕하십니까!' });
+});
 
 app.listen(3000, () => {
   console.log('Server is listening on port 3000');
