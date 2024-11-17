@@ -691,7 +691,58 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ### 라우터 레벨 미들웨어
 
+- 라우터 레벨 미들웨어
+  - Express에서 특정 라우터에만 적용되는 미들웨어
+  - 이를 통해, 라우터마다 다른 미들웨어를 실행하거나, 공통 미들웨어를 라우터 단위로 분리하여 관리할 수 있음.
+  - <b>router.use()</b>로 특정 라우터에만 적용되는 미들웨어를 설정함.
+
+  - 예시:
+    - productRouter.use()로 /products 경로에 대한 모든 요청에 공통 미들웨어 실행.
+    - app.use('/products', productRouter)로 /products 경로에 productRouter 미들웨어 적용.
+
+    ```
+    import express from 'express';
+    const app = express();
+
+    // Product Router
+    const productRouter = express.Router();
+
+    // 공통 미들웨어
+    productRouter.use((req, res, next) => {
+      console.log('Product Router에서 항상 실행!');
+      next();
+    });
+
+    // 라우트 정의
+    productRouter.route('/')
+      .get((req, res) => res.json({ message: 'Product 목록 보기' }))
+      .post((req, res) => res.json({ message: 'Product 추가하기' }));
+
+    productRouter.route('/:id')
+      .patch((req, res) => res.json({ message: 'Product 수정하기' }))
+      .delete((req, res) => res.json({ message: 'Product 삭제하기' }));
+
+    // 미들웨어 적용
+    app.use('/products', productRouter);
+
+    app.listen(3000, () => console.log('Server running on port 3000'));
+    ```
+    => product에서 시작하는 경로에서 미들웨어의 콘솔이 출력됨
+
+
 ### Express 프로젝트 구조와 모듈화
+
+- 프로젝트 구조
+  ```
+  src/
+  ├── middlewares/
+  │   ├── always.js       # 항상 실행되는 공통 미들웨어
+  │   └── otherMiddleware.js  # 다른 미들웨어 예시
+  ├── routes/
+  │   ├── product.js      # 상품 관련 라우터
+  │   └── user.js         # 사용자 관련 라우터
+  └── app.js              # Express 앱 설정 및 라우터 연결
+  ```
 
 -----
 
