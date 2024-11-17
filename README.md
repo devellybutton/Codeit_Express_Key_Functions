@@ -575,7 +575,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 ```
 -----
 
-## 2. 라우터
+## Ⅱ. 라우터
 
 ### 라우트 중복 제거하기
 
@@ -691,7 +691,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ### 라우터 레벨 미들웨어
 
-- 라우터 레벨 미들웨어
+- <b>라우터 레벨 미들웨어</b>
   - Express에서 특정 라우터에만 적용되는 미들웨어
   - 이를 통해, 라우터마다 다른 미들웨어를 실행하거나, 공통 미들웨어를 라우터 단위로 분리하여 관리할 수 있음.
   - <b>router.use()</b>로 특정 라우터에만 적용되는 미들웨어를 설정함.
@@ -732,7 +732,7 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 ### Express 프로젝트 구조와 모듈화
 
-- 프로젝트 구조
+- <b>프로젝트 구조</b>
   ```
   src/
   ├── middlewares/
@@ -746,10 +746,110 @@ app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 -----
 
-## 3. 파일 업로드
+## Ⅲ. 파일 업로드
 
 ### 파일과 multipart/form-data
 
+#### Content-Type이란?
+- HTTP 요청/응답의 본문(body)이 어떤 형식인지 명시하는 헤더
+- 서버와 클라이언트가 데이터를 올바르게 해석하기 위해 사용됩니다.
+- 주요 Content-Type 종류
+  - `application/json` : JSON 형식의 데이터 전송
+  ```
+  app.use(express.json());  // JSON 파싱 미들웨어
+  ```
+  ```
+  // 클라이언트 요청
+  fetch('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'  // JSON 형식임을 명시
+    },
+    body: JSON.stringify({ name: 'Codeit' })
+  });
+  ```
+  - `application/x-www-form-urlencoded` : HTML 폼의 기본 전송 형식
+  ```
+  app.use(express.urlencoded({ extended: true }));  // 폼 데이터 파싱
+  ```
+  ```
+  <form method="POST">
+    <input name="username">  
+    // username=codeit 형식으로 전송됨
+  </form>
+  ```
+
+#### 파일 전송 방식
+
+- <b>Base64 인코딩 방식 (텍스트 변환)</b>
+  - 장점: 단순함, 텍스트로 전송 가능
+  - 단점: 파일 크기가 약 30% 증가, 비효율적
+  ```
+  {
+    "fileName": "photo.jpg",
+    "fileData": "iVBORw0KGgoAAAANSU..." // 파일을 텍스트로 변환
+  }
+  ```
+
+- <b>Multipart 방식 (권장)</b>
+  - 장점: 효율적, 파일 원본 그대로 전송
+  - 특징: 폼 데이터와 파일을 함께 전송 가능
+  ```
+  / 파일 업로드 폼
+  <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="photo">
+    <input type="text" name="title">
+  </form>
+  ```
+  ```
+  // 서버 처리 (multer 사용)
+  const multer = require('multer');
+  const upload = multer({ dest: 'uploads/' });
+
+  app.post('/upload', 
+    upload.single('photo'),  // 파일 처리 미들웨어
+    (req, res) => {
+      // req.file: 업로드된 파일 정보
+      // req.body: 다른 폼 데이터
+    }
+  );
+  ```
+
+- <b>요약</b>
+  - Content-Type은 데이터 형식을 명시하는 중요한 헤더
+  - 파일 전송은 multipart/form-data 사용이 권장됨
+  - multer 같은 미들웨어로 파일 업로드 처리 가능
+  - 브라우저는 multipart/form-data 설정 시 자동으로 적절한 요청 형식 구성
+
 ### multer 미들웨어 사용하기
+
+#### Multer
+  - multipart/form-data 형식의 요청 본문을 처리하는 미들웨어
+  - <b>upload.single('attachment')</b>: 파일을 한 개만 업로드 받을 때 사용. 여기서 'attachment'는 HTML 폼에서 파일 필드의 이름
+  - <b>req.file</b>: 업로드된 파일에 대한 정보가 담김.
+
+    ![image](https://github.com/user-attachments/assets/b55e9755-e84e-47fc-a055-861d715378f5)
+
+    ```
+    import express from 'express';
+    import multer from 'multer';
+
+    const app = express();
+    const upload = multer({ dest: 'uploads/' });
+
+    app.post('/files', upload.single('attachment'), (req, res) => {
+      console.log(req.file);  // 업로드된 파일 정보
+      res.json({ message: "파일 업로드 완료!" });
+    });
+
+    app.listen(3000, () => {
+      console.log('Server is listening on port 3000');
+    });
+    ```
+
+- 파일 이름은 hello.txt로 만들었는데 랜덤한 문자열로 생성됨.
+  - 이유 : 파일명이 같을 수 있어서 서버에서는 파일명을 랜덤하게 만드는 방식을 사용함.
+
+  ![image](https://github.com/user-attachments/assets/b49c61e6-dc4f-451a-a4db-fc277d0bcba5)
 
 ### 서버의 파일 제공하기

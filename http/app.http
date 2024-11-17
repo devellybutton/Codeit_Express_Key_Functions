@@ -1,17 +1,9 @@
-GET http://localhost:3000/products
+POST http://localhost:3000/files
+Content-Type: multipart/form-data; boundary=Boundary01234567890123456789
 
-###
+--Boundary01234567890123456789
+Content-Disposition: form-data; name="attachment"; filename="hello.txt"
+Content-Type: text/plain
 
-POST http://localhost:3000/products
-
-###
-
-PATCH http://localhost:3000/products/1
-
-###
-
-DELETE http://localhost:3000/products/1
-
-###
-
-GET http://localhost:3000/users
+Hello!
+--Boundary01234567890123456789--
